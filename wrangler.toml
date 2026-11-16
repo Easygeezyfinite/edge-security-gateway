@@ -1,0 +1,10 @@
+name = "edge-security-gateway"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[vars]
+ORIGIN_URL = "https://httpbin.org"
+BLOCKED_PATH_PREFIXES = "/admin,/.env,/.git,/wp-admin"
+ALLOWED_METHODS = "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS"
+MAX_BODY_BYTES = "1048576"
+ORIGIN_TIMEOUT_MS = "10000"
