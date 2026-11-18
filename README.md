@@ -73,6 +73,9 @@ Set in `wrangler.toml` under `[vars]`:
 | `MAX_BODY_BYTES` | `1048576` | larger bodies get 413 |
 | `ORIGIN_TIMEOUT_MS` | `10000` | slower origins get 504 |
 
+Set both numeric limits to positive whole numbers. Unset or blank limits use the
+defaults in the table.
+
 ## Running it
 
 Requires Node 22.18 or newer. Tests use Node's built-in test runner, which can run
