@@ -66,3 +66,23 @@ test("readBodyWithLimit allows a body exactly at the limit", async () => {
 test("readBodyWithLimit gives up once a chunked body passes the limit", async () => {
   assert.equal(await readBodyWithLimit(chunkedRequest([6, 6]), 10), null);
 });
+
+test("readBodyWithLimit cancels the stream after exceeding the limit", async () => {
+  let cancelled = false;
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array(11));
+    },
+    cancel() {
+      cancelled = true;
+    },
+  });
+  const request = new Request("https://edge.test/upload", {
+    method: "POST",
+    body: stream,
+    duplex: "half",
+  } as RequestInit);
+
+  assert.equal(await readBodyWithLimit(request, 10), null);
+  assert.equal(cancelled, true);
+});
