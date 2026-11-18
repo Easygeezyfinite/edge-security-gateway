@@ -197,3 +197,23 @@ test("a missing ORIGIN_URL returns 500 instead of throwing", async () => {
   const response = await handleRequest(new Request("https://edge.test/"), { ORIGIN_URL: "" }, recordingOrigin().fetchOrigin);
   assert.equal(response.status, 500);
 });
+
+test("measures upload limits in UTF-8 bytes", async () => {
+  const origin = recordingOrigin();
+  const atLimit = "é".repeat(8);
+  const accepted = await handleRequest(
+    new Request("https://edge.test/api", { method: "POST", body: atLimit }),
+    env,
+    origin.fetchOrigin,
+  );
+  const rejected = await handleRequest(
+    new Request("https://edge.test/api", { method: "POST", body: atLimit + "é" }),
+    env,
+    origin.fetchOrigin,
+  );
+
+  assert.equal(accepted.status, 200);
+  assert.equal(rejected.status, 413);
+  assert.equal(origin.seen.length, 1);
+  assert.equal(await origin.seen[0].text(), atLimit);
+});
